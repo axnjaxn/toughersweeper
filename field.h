@@ -1,43 +1,52 @@
-#ifndef _BPJ_TOUGHSWEEPER_FIELD_H
-#define _BPJ_TOUGHSWEEPER_FIELD_H
+#ifndef _BPJ_TOUGHERSWEEPER_FIELD_H
+#define _BPJ_TOUGHERSWEEPER_FIELD_H
 
-#define FIELD_VISIBLE 0x80
-#define FIELD_BOMB 0x40
-#define FIELD_FLAGGED 0x20
-#define FIELD_NUMBERS 0x1F
+#include "packing.h"
+
+union Cell {
+  unsigned short bytes;
+  struct {
+    bool visible:1;
+    bool bomb:1;
+    bool flagged:1;
+    bool computed:1;
+    unsigned int mark:6;
+    unsigned int numbers:6;
+  };
+};
 
 class Field {
 protected:
-  int w, h, nmines, nminesleft, nflagsleft, nsize;
-  unsigned char *cells, *marks;
+  int w, h, m, n, nmines, nminesleft, nflagsleft;
+  Cell* cells;
+  PackingGrid A, B;
 
-  int getNeighborhood(int r0, int c0, int n) const;
+  int computeMinesInNeighborhood(int r, int c) const;
 
 public:
-  Field(int width, int height, int num_mines, int neighbor_size);
+  Field(int w, int h, int m, int n, int nmines);
   Field(const Field& f);
   virtual ~Field();
 
   Field& operator=(const Field& f);
 
-  void reset();
+  void randomize();
 
   inline int flags() const {return nflagsleft;}
   inline bool complete() const {return (!nminesleft && !nflagsleft);}
   inline int width() const {return w;}
   inline int height() const {return h;}
-  inline void setMark(int r, int c, unsigned char mark) {marks[r * w + c] = mark;}
-  inline unsigned char getMark(int r, int c) const {return marks[r * w + c];}
-  inline void setVisible(int r, int c) {cells[r * w + c] |= FIELD_VISIBLE;}
-  inline bool isVisible(int r, int c) const {return cells[r * w + c] & FIELD_VISIBLE;}
-  inline bool isFlagged(int r, int c) const {return cells[r * w + c] & FIELD_FLAGGED;}
-  inline bool isBomb(int r, int c) const {return cells[r * w + c] & FIELD_BOMB;}
-  inline int neighbors(int r, int c) const {return cells[r * w + c] & FIELD_NUMBERS;}
+  inline void setMark(int r, int c, unsigned int mark) {cells[r * w + c].mark = mark;}
+  inline unsigned int getMark(int r, int c) const {return cells[r * w + c].mark;}
+  void setVisible(int r, int c);
+  inline bool isVisible(int r, int c) const {return cells[r * w + c].visible;}
+  inline bool isFlagged(int r, int c) const {return cells[r * w + c].flagged;}
+  inline bool isBomb(int r, int c) const {return cells[r * w + c].bomb;}
+  inline int minesInNeighborhood(int r, int c) const {return cells[r * w + c].numbers;}//Only defined if visible!
+  std::vector<int> getNeighbors(int r, int c) const;
 
   void traverseZero(int r, int c);//Expands connected 0-neighbor cells
-  void flag(int r, int c);
-
-  void print();
+  void toggleFlag(int r, int c);
 };
 
 #endif

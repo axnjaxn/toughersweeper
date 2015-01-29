@@ -3,14 +3,17 @@ LFLAGS = `byteimage-config --libs` `sdl-config --libs` `byteimage-config --libs`
 
 all: toughersweeper
 
-field.o: field.h field.cpp
+packing.o: packing.h packing.cpp
+	$(CXX) packing.cpp -c $(CFLAGS)
+
+field.o: packing.h field.h field.cpp
 	$(CXX) field.cpp -c $(CFLAGS)
 
 main.o: field.h main.cpp
 	$(CXX) main.cpp -c $(CFLAGS)
 
-toughersweeper: field.o main.o
-	$(CXX) field.o main.o -o $@ $(LFLAGS)
+toughersweeper: packing.o field.o main.o
+	$(CXX) packing.o field.o main.o -o $@ $(LFLAGS)
 
 run: toughersweeper
 	./toughersweeper

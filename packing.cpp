@@ -82,5 +82,3 @@ PackingGrid PackingGrid::random(int h, int w, int m, int n) {
 void PackingGrid::mutate() {
   //TODO
 }
-
-#endif
