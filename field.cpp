@@ -66,10 +66,19 @@ void Field::randomize() {
   nminesleft = nflagsleft = nmines;
   //TODO: Generate packing grids
 
-  //TODO
-  //Generate a permutation of nmines indices
-  //Set them all to be mines
-  //It's possible to compute all mines in all neighborhoods, but probably should do that lazily
+  std::vector<int> P(w * h);
+  for (int i = 0; i < P.size(); i++)
+    P[i] = i;
+
+  for (int i = 0, j, t; i < nmines; i++) {
+    j = i + (rand() % (P.size() - i));
+    
+    t = P[i];
+    P[i] = P[j];
+    P[j] = t;
+
+    cells[P[i]].bomb = 1;
+  }
 }
 
 void Field::setVisible(int r, int c) {
@@ -97,6 +106,7 @@ void Field::traverseZero(int r, int c) {
   std::vector<int> neighborhood = getNeighbors(r, c);
   for (int i = 0, r, c; i < neighborhood.size(); i++) {
     r = neighborhood[i] / w; c = neighborhood[i] % w;
+    if (cells[r * w + c].visible) continue;
     setVisible(r, c);
     if (cells[r * w + c].numbers == 0) traverseZero(r, c);
   }
@@ -104,7 +114,6 @@ void Field::traverseZero(int r, int c) {
 
 void Field::toggleFlag(int r, int c) {
   if (cells[r * w + c].flagged) {
-    cells[r * w + c].flagged = !cells[r * w + c].flagged;
     if (cells[r * w + c].bomb) nminesleft++;
     nflagsleft++;
   }
@@ -112,5 +121,6 @@ void Field::toggleFlag(int r, int c) {
     if (cells[r * w + c].bomb) nminesleft--;
     nflagsleft--;
   }
+  cells[r * w + c].flagged = !cells[r * w + c].flagged;
 }
 
