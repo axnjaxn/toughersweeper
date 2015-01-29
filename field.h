@@ -22,6 +22,7 @@ protected:
   PackingGrid A, B;
 
   int computeMinesInNeighborhood(int r, int c) const;
+  void traverseZero(int r, int c);//Expands connected 0-neighbor cells
 
 public:
   Field(int w, int h, int m, int n, int nmines);
@@ -45,7 +46,6 @@ public:
   inline int minesInNeighborhood(int r, int c) const {return cells[r * w + c].numbers;}//Only defined if visible!
   std::vector<int> getNeighbors(int r, int c) const;
 
-  void traverseZero(int r, int c);//Expands connected 0-neighbor cells
   void toggleFlag(int r, int c);
 };
 

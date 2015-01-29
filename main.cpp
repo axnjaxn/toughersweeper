@@ -37,7 +37,7 @@ void displayField(ByteImage& target, const Field& field, TextRenderer* font, int
 	if (field.isBomb(r, c))
 	  bgcolor = makeColor(255, 0, 0);
 	else {
-	  sprintf(label, "%d", field.neighbors(r,c));
+	  sprintf(label, "%d", field.minesInNeighborhood(r, c));
 	  fgcolor = makeColor(0, 0, 0);
 	  font->drawCentered(target, label, y + h / 2, x + w / 2, 0, 0, 0);
 	}
@@ -95,7 +95,7 @@ protected:
       if (event.key.keysym.sym == SDLK_ESCAPE) exit(0);
       else if (event.key.keysym.sym == SDLK_F2) {
 	srand(time(NULL));
-	field->reset();
+	field->randomize();
 	dead = 0;
 	render();
       }
@@ -111,13 +111,11 @@ protected:
     }
     else if (!dead && event.type == SDL_MOUSEBUTTONDOWN) {
       if (event.button.button == SDL_BUTTON_RIGHT) {
-	if (!field->isVisible(cursor_r, cursor_c)) field->flag(cursor_r, cursor_c);
+	if (!field->isVisible(cursor_r, cursor_c)) field->toggleFlag(cursor_r, cursor_c);
       }
       else if (event.button.button == SDL_BUTTON_LEFT) {
 	field->setVisible(cursor_r, cursor_c);
 	if (field->isBomb(cursor_r, cursor_c)) dead = 1;
-	else if (field->neighbors(cursor_r, cursor_c) == 0)
-	  field->traverseZero(cursor_r, cursor_c);
       }
       render();
     }
@@ -155,7 +153,7 @@ int main(int argc, char* argv[]) {
 
   srand(time(NULL));
 
-  Field field(nr, nc, nm, SZ);
+  Field field(nr, nc, 4, 5, nm);
   SweeperUI(field).main();
 
   return 0;

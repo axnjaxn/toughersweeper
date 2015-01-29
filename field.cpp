@@ -5,12 +5,21 @@
 #include <cstring>
 
 int Field::computeMinesInNeighborhood(int r, int c) const {
-  //TODO
-  //If it has already been computed, return the number
-  //If it is a bomb, set computed and return 0
-  //Get the neighborhood
-  //Sum the number of mines in the neighborhood
-  //Set computed and return the result
+  if (cells[r * w + c].computed);
+  else if (cells[r * w + c].bomb) {
+    cells[r * w + c].computed = 1;
+    cells[r * w + c].numbers = 0;
+  }
+  else {
+    std::vector<int> neighborhood = getNeighbors(r, c);
+    cells[r * w + c].numbers = 0;
+    for (int i = 0; i < neighborhood.size(); i++)
+      if (cells[neighborhood[i]].bomb)
+	cells[r * w + c].numbers++;
+    cells[r * w + c].computed = 1;
+  }
+  
+  return cells[r * w + c].numbers;
 }
 
 Field::Field(int w, int h, int m, int n, int nmines) {
@@ -63,9 +72,34 @@ void Field::randomize() {
   //It's possible to compute all mines in all neighborhoods, but probably should do that lazily
 }
 
+void Field::setVisible(int r, int c) {
+  computeMinesInNeighborhood(r, c);
+  cells[r * w + c].visible = 1;
+  if (!cells[r * w + c].bomb && cells[r * w + c].numbers == 0)
+    traverseZero(r, c);
+}
+
+std::vector<int> Field::getNeighbors(int r, int c) const {
+  std::vector<int> neighborhood;
+
+  //TODO: Use packing grid
+  for (int r1 = r - 1; r1 <= r + 1; r1++)
+    for (int c1 = c - 1; c1 <= c + 1; c1++) {
+      if (r1 >= 0 && r1 < h && c1 >= 0 && c1 < w)
+	neighborhood.push_back(r1 * w + c1);
+    }
+  //endel
+
+  return neighborhood;
+}
+
 void Field::traverseZero(int r, int c) {
-  //TODO
-  //Should use getNeighbors
+  std::vector<int> neighborhood = getNeighbors(r, c);
+  for (int i = 0, r, c; i < neighborhood.size(); i++) {
+    r = neighborhood[i] / w; c = neighborhood[i] % w;
+    setVisible(r, c);
+    if (cells[r * w + c].numbers == 0) traverseZero(r, c);
+  }
 }
 
 void Field::toggleFlag(int r, int c) {
@@ -79,3 +113,4 @@ void Field::toggleFlag(int r, int c) {
     nflagsleft--;
   }
 }
+
