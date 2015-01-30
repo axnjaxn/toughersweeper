@@ -29,7 +29,7 @@ std::vector<int> PackingGrid::bestFactorization(std::vector<int> nj, int N) {
   factor(nj, N, solns);
 
   //TODO: Formula for best factorization should minimize variance of aj
-  
+
   return solns[solns.size() / 2];
 }
 
@@ -47,7 +47,6 @@ PackingGrid PackingGrid::initial(int h, int w, int m, int n) {
   for (int i = 0, group = 1, r = 0, c = 0; i < nj.size(); i++) {
     for (int j = 0; j < aj[i]; j++) {
       for (int k = 0; k < nj[i]; k++) {
-	printf("Cursor: %d %d\n", r, c);
 	grid.set(r, c, group);
 	if (!(r & 1)) {
 	  if (++c >= grid.w) {
@@ -59,7 +58,7 @@ PackingGrid PackingGrid::initial(int h, int w, int m, int n) {
 	  if (--c < 0) {
 	    c++;
 	    r++;
-	    }
+	  }
 	}
       }
       group++;
@@ -80,5 +79,22 @@ PackingGrid PackingGrid::random(int h, int w, int m, int n) {
 }
 
 void PackingGrid::mutate() {
-  //TODO
+  int r, c, r1, c1, i;
+
+  for (;;) {
+    i = rand() % (w * h);
+    r = r1 = i / w; c = c1 = i % w;
+    
+    i = rand() % 4;
+    switch (i) {
+    case 0: r1--; break;
+    case 1: r1++; break;
+    case 2: c1--; break;
+    case 3: c1++; break;
+    }
+
+    if (r1 < 0 || r1 >= h || c1 < 0 || c1 >= w || at(r, c) == at(r1, c1)) continue;
+    
+    break;
+  }
 }

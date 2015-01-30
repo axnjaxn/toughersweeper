@@ -22,7 +22,7 @@ int Field::computeMinesInNeighborhood(int r, int c) const {
   return cells[r * w + c].numbers;
 }
 
-Field::Field(int w, int h, int m, int n, int nmines) {
+Field::Field(int h, int w, int m, int n, int nmines) {
   this->w = w;
   this->h = h;
   this->m = m;
@@ -30,7 +30,7 @@ Field::Field(int w, int h, int m, int n, int nmines) {
   if (nmines > w * h) nmines = w * h;
   this->nmines = nmines;
   cells = new Cell [w * h];
-  //TODO: Packing grids
+
   randomize();
 }
 
@@ -54,17 +54,19 @@ Field& Field::operator=(const Field& f) {
   cells = new Cell [w * h];
   memcpy(cells, f.cells, w * h * sizeof(Cell));
 
-  //TODO: Packing grids
+
+  A = f.A;
+  B = f.B;
 
   return *this;
 }
 
-//TODO below here
-
 void Field::randomize() {
   memset(cells, 0, w * h * sizeof(Cell));  
   nminesleft = nflagsleft = nmines;
-  //TODO: Generate packing grids
+
+  A = PackingGrid::random(h, w, m, n);
+  B = PackingGrid::random(h, w, m, n);
 
   std::vector<int> P(w * h);
   for (int i = 0; i < P.size(); i++)
@@ -89,17 +91,13 @@ void Field::setVisible(int r, int c) {
 }
 
 std::vector<int> Field::getNeighbors(int r, int c) const {
-  std::vector<int> neighborhood;
+  std::vector<int> N;
 
-  //TODO: Use packing grid
-  for (int r1 = r - 1; r1 <= r + 1; r1++)
-    for (int c1 = c - 1; c1 <= c + 1; c1++) {
-      if (r1 >= 0 && r1 < h && c1 >= 0 && c1 < w)
-	neighborhood.push_back(r1 * w + c1);
-    }
-  //endel
+  for (int r1 = 0; r1 < h; r1++)
+    for (int c1 = 0; c1 < w; c1++)
+      if (inNeighborhood(r, c, r1, c1)) N.push_back(r1 * w + c1);
 
-  return neighborhood;
+  return N;
 }
 
 void Field::traverseZero(int r, int c) {

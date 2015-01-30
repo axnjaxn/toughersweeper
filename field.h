@@ -25,7 +25,7 @@ protected:
   void traverseZero(int r, int c);//Expands connected 0-neighbor cells
 
 public:
-  Field(int w, int h, int m, int n, int nmines);
+  Field(int h, int w, int m, int n, int nmines);
   Field(const Field& f);
   virtual ~Field();
 
@@ -45,6 +45,7 @@ public:
   inline bool isBomb(int r, int c) const {return cells[r * w + c].bomb;}
   inline int minesInNeighborhood(int r, int c) const {return cells[r * w + c].numbers;}//Only defined if visible!
   std::vector<int> getNeighbors(int r, int c) const;
+  inline bool inNeighborhood(int r, int c, int r1, int c1) const {return A.at(r, c) == A.at(r1, c1) || B.at(r, c) == B.at(r1, c1);}
 
   void toggleFlag(int r, int c);
 };
