@@ -46,6 +46,8 @@ public:
   inline int minesInNeighborhood(int r, int c) const {return cells[r * w + c].numbers;}//Only defined if visible!
   std::vector<int> getNeighbors(int r, int c) const;
   inline bool inNeighborhood(int r, int c, int r1, int c1) const {return A.at(r, c) == A.at(r1, c1) || B.at(r, c) == B.at(r1, c1);}
+  inline bool inNeighborhoodA(int r, int c, int r1, int c1) const {return A.at(r, c) == A.at(r1, c1);}
+  inline bool inNeighborhoodB(int r, int c, int r1, int c1) const {return B.at(r, c) == B.at(r1, c1);}
 
   void toggleFlag(int r, int c);
 };

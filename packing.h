@@ -24,6 +24,10 @@ public:
   inline int at(int r, int c) const {return cells[r * w + c];}
   inline void set(int r, int c, int v) {cells[r * w + c] = v;}
 
+  inline int rows() const {return h;}
+  inline int cols() const {return w;}
+  inline bool inBounds(int r, int c) const {return (r >= 0 && r < h && c >= 0 && c < w);}
+
   void mutate();
 };
 

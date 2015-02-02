@@ -27,8 +27,9 @@ void displayField(ByteImage& target, const Field& field, TextRenderer* font, int
       fgcolor = makeColor(0, 0, 0);
 
       if (field.inNeighborhood(mr, mc, r, c)) {
-	if (field.isVisible(r, c)) bgcolor = makeColor(255, 255, 192);
-	else bgcolor = makeColor(255, 255, 128);
+	bgcolor = makeColor(192, 192, field.isVisible(r, c)? 192 : 128);
+	if (field.inNeighborhoodA(mr, mc, r, c)) bgcolor.at(0) = 255;
+	if (field.inNeighborhoodB(mr, mc, r, c)) bgcolor.at(1) = 255;
       }
 
       if (field.isFlagged(r, c))
@@ -153,7 +154,7 @@ int main(int argc, char* argv[]) {
 
   srand(time(NULL));
 
-  Field field(nr, nc, 5, 4, nm);
+  Field field(nr, nc, 6, 4, nm);
   SweeperUI(field).main();
 
   return 0;
