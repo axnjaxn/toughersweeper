@@ -130,10 +130,14 @@ void PackingGrid::mutate() {
 	}
 	else if (at(r, c) == g1) group1.push_back(r * w + c);
 
+    if (group.empty()) printf("PANIC\n");
+
 #if 0
     /* See if size constraint is satisfied */
 
     if (group.size() == n || group1.size == m) continue;
+#else
+    if (group.size() == 1) continue;
 #endif
     
     /* Permute the adjacency pairs */
